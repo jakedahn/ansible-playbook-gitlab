@@ -85,6 +85,10 @@
       user: state=present name=git system=yes shell=/bin/sh comment="Git Version Control" # Possible problem is that --disabled-password is not set explicitly – I couldn’t find anything like that.
     - name: ensure user gitlab is present
       user: state=present name=gitlab groups=git comment="GitLab" generate_ssh_key=yes
+    - name: Add ssh_config for the git user
+      action: template src=config_files/user_ssh_config dest=/home/git/.ssh/config
+    - name: Add ssh_config for the gitlab user
+      action: template src=config_files/user_ssh_config dest=/home/gitlab/.ssh/config
 
 # 4. Gitolite
 
@@ -119,7 +123,7 @@
   sudo: yes
   sudo_user: git
   tasks:
-    - name: use gitlab’s SSH key for Gitolite setup 
+    - name: use gitlab’s SSH key for Gitolite setup
       command: sh -c "PATH=/home/git/bin:$PATH; gitolite setup -pk /home/git/gitlab.pub" creates=/home/git/repositories/gitolite-admin.git
 
 - hosts: gitlab
