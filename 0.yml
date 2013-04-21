@@ -4,42 +4,27 @@
 - hosts: gitlab
   sudo: yes
   tasks:
-    - name: ensure package build-essential is present
-      apt: state=present pkg=build-essential
-    - name: ensure package zlib1g-dev is present
-      apt: state=present pkg=zlib1g-dev
-    - name: ensure package libyaml-dev is present
-      apt: state=present pkg=libyaml-dev
-    - name: ensure package libssl-dev is present
-      apt: state=present pkg=libssl-dev
-    - name: ensure package libgdbm-dev is present
-      apt: state=present pkg=libgdbm-dev
-    - name: ensure package libreadline-dev is present
-      apt: state=present pkg=libreadline-dev
-    - name: ensure package libncurses5-dev is present
-      apt: state=present pkg=libncurses5-dev
-    - name: ensure package libffi-dev is present
-      apt: state=present pkg=libffi-dev
-    - name: ensure package curl is present
-      apt: state=present pkg=curl
-    - name: ensure package git-core is present
-      apt: state=present pkg=git-core
-    - name: ensure package openssh-server is present
-      apt: state=present pkg=openssh-server
-    - name: ensure package redis-server is present
-      apt: state=present pkg=redis-server
-    - name: ensure package postfix is present
-      apt: state=present pkg=postfix
-    - name: ensure package checkinstall is present
-      apt: state=present pkg=checkinstall
-    - name: ensure package libxml2-dev is present
-      apt: state=present pkg=libxml2-dev
-    - name: ensure package libxslt1-dev is present
-      apt: state=present pkg=libxslt1-dev # The installation document says libxslt-dev, but I guess this is okay
-    - name: ensure package libcurl4-openssl-dev is present
-      apt: state=present pkg=libcurl4-openssl-dev
-    - name: ensure package libicu-dev is present
-      apt: state=present pkg=libicu-dev
+    name: ensure app apt dependencies are installed
+    action: apt pkg=$item
+    with_items:
+      - build-essential
+      - zlib1g-dev
+      - libyaml-dev
+      - libssl-dev
+      - libgdbm-dev
+      - libreadline-dev
+      - libncurses5-dev
+      - libffi-dev
+      - curl
+      - git-core
+      - openssh-server
+      - redis-server
+      - postfix
+      - checkinstall
+      - libxml2-dev
+      - libxslt1-dev # The installation document says libxslt-dev, but I guess this is okay
+      - libcurl4-openssl-dev
+      - libicu-dev
 
 - hosts: gitlab
   sudo: yes
