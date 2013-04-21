@@ -15,11 +15,13 @@
 
 - hosts: gitlab
   sudo: yes
+  vars_prompt:
+    fqdn: "Please enter the domain or ip you wish to use (this is for nginx)"
   tasks:
     - name: ensure package nginx is present
       apt: state=present pkg=nginx
     - name: ensure GitLab Nginx site is available
-      get_url: url=https://raw.github.com/gitlabhq/gitlab-recipes/4-2-stable/nginx/gitlab dest=/etc/nginx/sites-available/gitlab mode=0755
+      action: template src=templates/nginx_config.j2 dest=/etc/nginx/sites-available/gitlab mode=0755
     - name: ensure default Nginx site is not enabled
       file: state=absent path=/etc/nginx/sites-enabled/default
     - name: ensure GitLab Nginx site is enabled

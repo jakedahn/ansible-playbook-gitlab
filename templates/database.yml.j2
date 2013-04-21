@@ -1,1 +1,8 @@
-database.yml.j2
+production:
+  adapter: mysql2
+  encoding: utf8
+  database: gitlab_production
+  username: gitlab
+  password: {{ database_password }}
+  socket: /var/run/mysqld/mysqld.sock
+

@@ -51,6 +51,8 @@
       file: state=directory path=/home/gitlab/gitlab-satellites
     - name: ensure copy of unicorn config exists
       command: cp /home/gitlab/gitlab/config/unicorn.rb.example /home/gitlab/gitlab/config/unicorn.rb creates=/home/gitlab/gitlab/config/unicorn.rb
+    - name: ensure database config is written
+      action: template src=templates/database.yml.j2 dest=/home/gitlab/gitlab/config/database.yml mode=0755
     - name: ensure copy of database config exists
       command: cp /home/gitlab/gitlab/config/database.yml.mysql /home/gitlab/gitlab/config/database.yml creates=/home/gitlab/gitlab/config/database.yml
 
