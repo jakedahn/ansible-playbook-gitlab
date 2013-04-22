@@ -4,27 +4,27 @@
 - hosts: gitlab
   sudo: yes
   tasks:
-    name: ensure app apt dependencies are installed
-    action: apt pkg=$item
-    with_items:
-      - build-essential
-      - zlib1g-dev
-      - libyaml-dev
-      - libssl-dev
-      - libgdbm-dev
-      - libreadline-dev
-      - libncurses5-dev
-      - libffi-dev
-      - curl
-      - git-core
-      - openssh-server
-      - redis-server
-      - postfix
-      - checkinstall
-      - libxml2-dev
-      - libxslt1-dev # The installation document says libxslt-dev, but I guess this is okay
-      - libcurl4-openssl-dev
-      - libicu-dev
+    - name: ensure app apt dependencies are installed
+      action: apt pkg=$item
+      with_items:
+        - build-essential
+        - zlib1g-dev
+        - libyaml-dev
+        - libssl-dev
+        - libgdbm-dev
+        - libreadline-dev
+        - libncurses5-dev
+        - libffi-dev
+        - curl
+        - git-core
+        - openssh-server
+        - redis-server
+        - postfix
+        - checkinstall
+        - libxml2-dev
+        - libxslt1-dev # The installation document says libxslt-dev, but I guess this is okay
+        - libcurl4-openssl-dev
+        - libicu-dev
 
 - hosts: gitlab
   sudo: yes
@@ -70,10 +70,6 @@
       user: state=present name=git system=yes shell=/bin/sh comment="Git Version Control" # Possible problem is that --disabled-password is not set explicitly – I couldn’t find anything like that.
     - name: ensure user gitlab is present
       user: state=present name=gitlab groups=git comment="GitLab" generate_ssh_key=yes
-    - name: Add ssh_config for the git user
-      action: template src=config_files/user_ssh_config dest=/home/git/.ssh/config
-    - name: Add ssh_config for the gitlab user
-      action: template src=config_files/user_ssh_config dest=/home/gitlab/.ssh/config
 
 # 4. Gitolite
 
@@ -103,6 +99,8 @@
       command: cp /home/gitlab/.ssh/id_rsa.pub /home/git/gitlab.pub creates=/home/git/gitlab.pub
     - name: ensure copy of gitlab’s SSH key has mode 0444
       file: path=/home/git/gitlab.pub mode=0444
+    - name: ensure a copy of gitlab’s SSH key exists in git’s authorized keys
+      command: cp /home/gitlab/.ssh/id_rsa.pub /home/git/gitlab.pub creates=/home/git/.ssh/authorized_keys
 
 - hosts: gitlab
   sudo: yes
@@ -123,3 +121,13 @@
       file: state=directory path=/home/git/repositories owner=git group=git recurse=yes
     - name: fix directory permissions for repositories (3)
       shell: find /home/git/repositories -type d -print0 | sudo xargs -0 chmod g+s
+
+
+- hosts: gitlab
+  sudo: yes
+  tasks:
+    - name: Add ssh_config for the git user
+      action: template src=templates/user_ssh_config dest=/home/git/.ssh/config
+    - name: Add ssh_config for the gitlab user
+      action: template src=templates/user_ssh_config dest=/home/gitlab/.ssh/config
+
