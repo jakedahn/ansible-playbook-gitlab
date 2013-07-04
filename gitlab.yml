@@ -131,8 +131,7 @@
     - name: ensure database user gitlab is present and has privleges
       mysql_user: state=present name=gitlab host=localhost password=$database_password priv=gitlabhq_production.*:ALL
     - name: ensure copy of puma config exists
-      command: cp /home/git/gitlab/config/puma.rb.example /home/git/gitlab/config/puma.rb creates=/home/git/gitlab/config/puma.rb
-
+      action: template src=templates/puma.rb.j2 dest=/home/git/gitlab/config/puma.rb mode=0755
 
 - hosts: gitlab
   sudo: yes
@@ -161,14 +160,12 @@
 - hosts: gitlab
   sudo: yes
   tasks:
+    - name: ensure directory /tmp/run is present
+      file: state=directory path=/tmp/run
     - name: ensure init script is installed
-      get_url: url=https://raw.github.com/gitlabhq/gitlab-recipes/5-1-stable/init.d/gitlab dest=/etc/init.d/gitlab mode=0755
+      action: template src=templates/gitlab-init.d.j2 dest=/etc/init.d/gitlab mode=0755
     - name: make GitLab start on boot
       command: update-rc.d gitlab defaults 21
-    # Since the init script is janky, the following two actions seem to be the
-    # way to go for reliably restarting gitlab.
-    - name: kill erroneous puma socket file
-      command: rm /home/git/gitlab/tmp/sockets/gitlab.socket
     - name: stop GitLab
       command: /etc/init.d/gitlab stop
       ignore_errors: yes
