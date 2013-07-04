@@ -17,6 +17,12 @@ Run the following:
 
     ansible-playbook -vvv gitlab.yml -u ubuntu
 
+Next, run the following command from your server but *ONLY IF IT IS THE FIRST RUN* :
+
+  sudo su git
+  cd /home/git/gitlab
+  bundle exec rake gitlab:setup RAILS_ENV=production
+
 Now you should be able to log in with:
 
     username: admin@local.host
